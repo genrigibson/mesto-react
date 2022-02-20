@@ -40,7 +40,7 @@ export default function App() {
     setIsAddPlacePopupOpen(false);
     setIsImagePopupOpen(false);
     setIsConfirmDeletePopupOpen(false);
-    setSelectedCard(false);
+    setSelectedCard({});
   }
 
   return (
