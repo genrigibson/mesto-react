@@ -1,31 +1,56 @@
-export default function Card({ card, onCardClick, onDeleteClick }) {
-  function handleCardClick() {
+import React, { useContext } from "react";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+
+function Card({ onCardClick, onConfirmDelete, onCardLike, card }) {
+  const currentUser = useContext(CurrentUserContext);
+  const isOwn = card.owner._id === currentUser._id;
+  const cardDeleteButtonClassName = `${
+    isOwn ? "grid-card__delete-button" : "grid-card__delete-button_inactive"
+  } opacity`;
+
+  const isLiked = card.likes.some((i) => i._id === currentUser._id);
+  const cardLikeButtonClassName = `${
+    isLiked ? "grid-card__like-button_active" : "grid-card__like-button"
+  }`;
+
+  function handleClick() {
     onCardClick(card);
   }
 
+  function handleConfirmDelete() {
+    onConfirmDelete(card);
+  }
+
+  function handleCardLike() {
+    onCardLike(card, isLiked);
+  }
+
   return (
-    <li className="place">
+    <article className="grid-card">
+      <button
+        className={cardDeleteButtonClassName}
+        onClick={handleConfirmDelete}
+        type="button"
+      ></button>
       <img
-        className="place__photo popup__open-button"
+        className="grid-card__image"
+        onClick={handleClick}
         src={card.link}
         alt={card.name}
-        onClick={handleCardClick}
       />
-      <div className="place__description">
-        <h2 className="place__title">{card.name}</h2>
-        <div className="place__like-container">
+      <div className="grid-card__caption">
+        <h2 className="grid-card__title">{card.name}</h2>
+        <div className="grid-card__like-section">
           <button
-            className="place__like-button"
+            className={cardLikeButtonClassName}
+            onClick={handleCardLike}
             type="button"
-            aria-label="Нравится"
           ></button>
-          <span className="place__like-count">{card.likes.length}</span>
+          <p className="grid-card__likes-count">{card.likes.length}</p>
         </div>
       </div>
-      <button
-        className="button place__remove-button"
-        onClick={onDeleteClick}
-      ></button>
-    </li>
+    </article>
   );
 }
+
+export default Card;

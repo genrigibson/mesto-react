@@ -1,16 +1,35 @@
-export default function ImagePopup({ card, onClose, isOpen }) {
+import { useEffect } from 'react';
+
+function ImagePopup({ card, onClose }) {
+
+  useEffect(() => {
+    function closeByEscape(event) {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    }
+
+    document.addEventListener('keydown', closeByEscape);
+    return () => document.removeEventListener('keydown', closeByEscape);
+  }, []);
+
+  function handleOnClose(event) {
+    if (event.target.classList.contains('popup_opened')) {
+      onClose();
+    }
+  }
+
   return (
-    <div className={`popup popup_open-image ${isOpen && "popup_opened"}`}>
-      <figure className="popup__figure">
-        <img src={card.link} className="popup__image" alt="#" />
-        <figcaption className="popup__caption">{card.name}</figcaption>
-        <button
-          type="button"
-          className="button popup__close-button"
-          aria-label="Закрыть картинку"
-          onClick={onClose}
-        ></button>
+    <div className={card ? "popup popup_image popup_opened" : "popup popup_image"} onClick={handleOnClose}>
+      <figure className="figure">
+        <button className="popup__close-button opacity" onClick={onClose} type="button"></button>
+        <img className="figure__image" src={card ? card.link : "#"} alt={card ? card.name : "фотография отсутствует"} />
+        <figcaption className="figure__figcaption">
+          <p className="figure__image-caption">{card ? card.name : ""}</p>
+        </figcaption>
       </figure>
     </div>
   );
 }
+
+export default ImagePopup;

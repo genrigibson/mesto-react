@@ -1,9 +1,11 @@
-import mesto_logo from "../images/mesto_logo.svg";
+import React from 'react';
 
-export default function Header() {
+function Header() {
   return (
-    <header className="header page__header">
-      <img className="header__logo" src={mesto_logo} alt="логотип Место" />
+    <header className="header">
+      <div className="logo"></div>
     </header>
   );
 }
+
+export default Header;

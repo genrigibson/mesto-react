@@ -1,77 +1,59 @@
-import React, { useState, useEffect } from "react";
-import avatar from "../images/avatar.jpg";
-import api from "../utils/api.js";
+import React, { useContext } from "react";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import Card from "./Card";
 
-export default function Main({
-  onEditAvatar,
-  onEditInfo,
-  onAddPlace,
+function Main({
+  cards,
+  onCardsLike,
   onCardClick,
-  onDeleteClick,
+  onEditProfile,
+  onEditAvatar,
+  onAddPlace,
+  onConfirmDelete,
 }) {
-  const [userAvatar, setUserAvatar] = useState(avatar);
-  const [userName, setUserName] = useState("Жак-Ив Кусто");
-  const [userDescription, setUserDescription] = useState(
-    "Исследователь океана"
-  );
-  const [cards, setCards] = useState([]);
+  const currentUser = useContext(CurrentUserContext);
 
-  useEffect(() => {
-    api
-      .getAllData()
-      .then(([data, userData]) => {
-        setUserName(userData.name);
-        setUserDescription(userData.about);
-        setUserAvatar(userData.avatar);
-        setCards(data);
-      })
-      .catch((err) => {
-        console.log(`Ошибка загрузки данных: ${err}`);
-      });
-  }, []);
+  const cardElements = cards.map((card) => {
+    return (
+      <Card
+        onCardClick={onCardClick}
+        onConfirmDelete={onConfirmDelete}
+        onCardLike={onCardsLike}
+        card={card}
+        key={card._id}
+      />
+    );
+  });
 
   return (
-    <main className="main">
-      <section className="profile page__profile">
-        {/* ПОПАП АВАТАРА */}
-        <div className="profile__avatar-container">
-          <div
-            className="profile__avatar"
-            style={{ backgroundImage: `url(${userAvatar})` }}
-            onClick={onEditAvatar}
-          ></div>
+    <main className="content">
+      <section className="profile">
+        <div onClick={onEditAvatar} className="profile__image-hover">
+          <img
+            className="profile__image"
+            src={currentUser.avatar}
+            alt="Изображение профиля"
+          />
         </div>
         <div className="profile__info">
-          <h1 className="profile__name">{userName}</h1>
+          <h1 className="profile__user-name">{currentUser.name}</h1>
           <button
-            className="button profile__edit-button"
+            onClick={onEditProfile}
+            className="profile__edit-button opacity"
             type="button"
-            onClick={onEditInfo}
           ></button>
-          <p className="profile__about">{userDescription}</p>
+          <p className="profile__user-description">{currentUser.about}</p>
         </div>
         <button
-          className="button profile__add-button"
-          type="button"
-          aria-label="Добавить еще одно место"
           onClick={onAddPlace}
+          className="profile__add-button opacity"
+          type="button"
         ></button>
       </section>
-      <section className="places page__places">
-        <ul className="places__list">
-          {cards.map((card) => {
-            return (
-              <Card
-                card={card}
-                key={card._id}
-                onCardClick={onCardClick}
-                onDeleteClick={onDeleteClick}
-              />
-            );
-          })}
-        </ul>
-      </section>
+
+      <section className="grid-cards">{cardElements}</section>
     </main>
   );
 }
+
+export default Main;
